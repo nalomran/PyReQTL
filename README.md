@@ -1,4 +1,4 @@
-# PyReQTL: Collections of Python Modules Equivalent to R ReQTL Toolkit
+# PyReQTL
 
 ## Introduction
 
