@@ -98,43 +98,73 @@ import sys
 from datetime import datetime
 
 import rpy2.robjects as robjects  # type: ignore
-from rpy2.robjects import globalenv  # type: ignore
+import rpy2.robjects as ro
 from rpy2.robjects.packages import importr  # type: ignore
 
 from common import create_output_dir, output_filename_generator
 
-
-def load_data_from_MatrixEQTL(input_file: str):
-    """Load data including snvs and gene expression
-    using MatrixEQTL R package within Python using rpy2.robjects.r.
-
-    Parameters
-    -----------
-    input_file: snv and gene expression
+# use the following R operators to get and set R attributes
+get_r_attribute = ro.baseenv['$']
+set_r_attribute = ro.baseenv['$<-']
 
 
-    Returns
-    -------
-    load_data: a RS4 object which is a dataframe that is stored in slice object
+class MapTOS4(ro.methods.RS4):
+    """Mapping SR4 class to Python class which will extend rpy2’s RS4.
+
+    This class will allow to access attributes or fields and method of
+    SlicedData class.
 
     """
 
-    # create a variable name in R's global environment for each input file
-    globalenv['input_file'] = input_file
+    def __init__(self, r_obj, file_slice_size=2000):
+        super().__init__(r_obj)
+        self.file_slice_size = file_slice_size
 
-    r_string_load_data = """
-        load_data <- SlicedData$new()
-        load_data$fileDelimiter = "\t"
-        load_data$fileOmitCharacters = "NA"
-        load_data$fileSkipRows = 1
-        load_data$fileSkipColumns = 1
-        load_data$fileSliceSize = 2000
-        load_data$LoadFile(input_file)
-    """
+    def load_file(self, filename):
+        """Access the LoadFile method of SlicedData class
 
-    load_data = robjects.r(r_string_load_data)
+        Parameters
+        ----------
+        filename: the name of file to be loaded into SlicedData class
 
-    return load_data
+        Return
+        -------
+        get the R method which load the filename
+
+        """
+
+        return get_r_attribute(self, 'LoadFile')(filename)
+
+    @property
+    def file_slice_size(self):
+        """Access the fileSliceSize field or attribute of SlicedData class
+
+        Parameters
+        ----------
+        None
+
+        Return
+        -------
+        get the R attribute fileSliceSize
+
+        """
+        return get_r_attribute(self, 'fileSliceSize')
+
+    @file_slice_size.setter
+    def file_slice_size(self, value):
+        """Access the fileSliceSize field or attribute of SlicedData class
+
+        Parameters
+        ----------
+        value: the value to be set for fileSliceSize field
+
+        Return
+        -------
+        None
+
+        """
+
+        set_r_attribute(self, 'fileSliceSize', value)
 
 
 def main(args) -> None:
@@ -145,7 +175,6 @@ def main(args) -> None:
     ----------
     args: please read the above docstring (comments at the beginning of the
     module) for more information about the arguments used.
-
 
     Returns
     -------
@@ -165,165 +194,109 @@ def main(args) -> None:
 
     # check for installed package or install it, installing MatrixEQTL
     r_str_download = """
-        testPkg <- function(x){
-            if (!require(x,character.only = TRUE))
-            {
-              install.packages("MatrixEQTL",dep=TRUE)
-                if(!require(x,character.only = TRUE)) stop("missing package!")
+          testPkg <- function(x){
+              if (!require(x,character.only = TRUE))
+              {
+                install.packages("MatrixEQTL",dep=TRUE)
+                 if(!require(x,character.only = TRUE)) stop("missing package!")
+              }
             }
-          }
-        testPkg('MatrixEQTL')
-    """
+          testPkg('MatrixEQTL')
+      """
 
     robjects.r(r_str_download)
 
-    # load the library MatrixEQTL in R from within Python and load it
-    # into a namespace
-    robjects.r("library('MatrixEQTL')")
-
+    # import MatrixEQTL package
+    mql = importr("MatrixEQTL")
     # import utils package
     utils = importr("utils")
+    # import grDevices package
+    gr_devices = importr('grDevices')
+    # import base package
+    base = importr('base')
 
-    # load snv/genotype data from MatrixEQTL using rpy2.robjects.r
-    # and then store it to a variable in R's global environment
     snv_filename = args.snv
+    snvs_data = MapTOS4(mql.SlicedData())
+    # load snv/genotype data into SlicedData class
+    snvs_data.load_file(snv_filename)
 
-    # load_data_from_MatrixEQTL does the magic show R-to-Python interfacing
-    snvs = load_data_from_MatrixEQTL(snv_filename)
-    globalenv['snvs'] = snvs
-
-    # load gene expression data file same the was as the snv data
+    # load gene expression data file into SlicedData class
     gene_express_filename = args.gen_exp
-    gene = load_data_from_MatrixEQTL(gene_express_filename)
-    globalenv['gene'] = gene
+    gene_exp_data = MapTOS4(mql.SlicedData(), file_slice_size=2000)
+    gene_exp_data.load_file(gene_express_filename)
 
     # load Covariates data
-    covar_filename = args.cov_mt
-    globalenv['covar_filename'] = covar_filename
-
-    r_string_load_covar = '''
-            cvrt <- SlicedData$new()
-            cvrt$fileDelimiter = "\t"      
-            cvrt$fileOmitCharacters = "NA" 
-            cvrt$fileSkipRows = 1          
-            cvrt$fileSkipColumns = 1       
-        
-            if(length(covar_filename) > 1) {
-                cvrt$LoadFile(covar_filename)
-            } else{cvrt}
-    '''
-
-    cov_r_obj = robjects.r(r_string_load_covar)
-    globalenv['cvrt'] = cov_r_obj
+    # covar_filename = args.cov_mt
+    covar_data = MapTOS4(mql.SlicedData(), file_slice_size=1000)
 
     snv_loc_filename = args.snv_loc
 
     # need the utils package to read table for the downstream analysis
-
     snv_pos = utils.read_table(snv_loc_filename, header=True,
                                stringsAsFactors=False)
 
     gene_loc_filename = args.gen_loc
-
     gene_pos = utils.read_table(gene_loc_filename, header=True,
                                 stringsAsFactors=False)
 
     # value of either C for cis and T for trans
     cis_or_trans = args.ct
 
-    # globalenv['cis_or_trans'] = cis_or_trans
-
     output = create_output_dir("output")
 
-    globalenv['output_trans_file'] = output_filename_generator(output,
-                                                               args.out_dir,
-                                                               "_trans_ReQTLs.txt")
+    output_trans_file = output_filename_generator(output,
+                                                  args.out_dir,
+                                                  "_trans_ReQTLs.txt")
 
-    globalenv['output_cis_file'] = output_filename_generator(output,
-                                                             args.out_dir,
-                                                             "_cis_ReQTLs.txt")
-
-    globalenv['snv_pos'] = snv_pos
-    globalenv['gene_pos'] = gene_pos
-
-    globalenv['output_file_name'] = output_filename_generator(output,
-                                                              args.out_dir,
-                                                              "_all_ReQTLs.txt")
+    output_cis_file = output_filename_generator(output,
+                                                args.out_dir,
+                                                "_cis_ReQTLs.txt")
 
     # call the matrix_eQTL_main of MatrixEQTL package in case of trans case
-
-    # code inherited from R ReQTL toolkit
-    r_str_T_option = '''
-        useModel <<- modelLINEAR
-        errorCovariance <<- numeric()
-        cisDist <<- 1e6
-        
-        Mat_eQTL_m <- Matrix_eQTL_main(
-            snps = snvs,
-            gene = gene,
-            cvrt = cvrt,
-            output_file_name = output_trans_file,
-            pvOutputThreshold  = as.numeric(pval_tra),
-            useModel = modelLINEAR,
-            errorCovariance = errorCovariance,
-            verbose = FALSE,
-            output_file_name.cis = output_cis_file,
-            pvOutputThreshold.cis = as.numeric(pval_cis),
-            snpspos = snv_pos,
-            genepos = gene_pos,
-            cisDist = cisDist,
-            pvalue.hist = "qqplot",
-            min.pv.by.genesnp = FALSE,
-            noFDRsaveMemory = FALSE
-        )
-    '''
-
-    r_str_F_option = '''
-        useModel <<- modelLINEAR
-        errorCovariance <<- numeric()
-    
-        Mat_eQTL_m <- Matrix_eQTL_main(
-        snps = snvs,
-        gene = gene,
-        output_file_name = output_file_name,
-        useModel = useModel,
-        errorCovariance = errorCovariance,
-        verbose = FALSE,
-        pvOutputThreshold= as.numeric(pval),
-        snpspos = snv_pos,
-        genepos = gene_pos,
-        pvalue.hist = "qqplot",
-        min.pv.by.genesnp = FALSE,
-        noFDRsaveMemory = FALSE
-    );
-    
-    '''
-
     if cis_or_trans == "T":
-        globalenv['pval_cis'] = args.pcis
-        globalenv['pval_tra'] = args.ptra
-        meql_main = robjects.r(r_str_T_option)
-        globalenv['Mat_eQTL_m'] = meql_main
+
+        mat_eqtl = mql.Matrix_eQTL_main(
+            snps=snvs_data,
+            gene=gene_exp_data,
+            cvrt=covar_data,
+            output_file_name=output_trans_file,
+            pvOutputThreshold=float(args.ptra),
+            useModel=117348,
+            verbose=False,
+            output_file_name_cis=output_cis_file,
+            pvOutputThreshold_cis=float(args.pcis),
+            snpspos=snv_pos,
+            genepos=gene_pos,
+            cisDist=1e6,
+            pvalue_hist="qqplot",
+            min_pv_by_genesnp=False,
+            noFDRsaveMemory=False
+        )
 
     else:
-        globalenv['pval'] = args.p
-        meql_main = robjects.r(r_str_F_option)
-        globalenv['Mat_eQTL_m'] = meql_main
 
-    # prepare the ggplot file
-    globalenv['ggplot_file'] = output_filename_generator(output,
-                                                         args.out_dir,
-                                                         "_qqplot.tiff")
+        mat_eqtl = mql.Matrix_eQTL_main(
+            snps=snvs_data,
+            gene=gene_exp_data,
+            output_file_name=output_trans_file,
+            useModel=117348,
+            verbose=False,
+            pvOutputThreshold=float(args.ptra),
+            snpspos=snv_pos,
+            genepos=gene_pos,
+            pvalue_hist="qqplot",
+            min_pv_by_genesnp=False,
+            noFDRsaveMemory=False
+        )
 
-    robjects.r('''
-        tiff(filename = ggplot_file)
-    ''')
+    ggplot_file = output_filename_generator(output, args.out_dir,
+                                            "_qqplot.tiff")
 
-    robjects.r('''
-        plot(Mat_eQTL_m)
-    ''')
+    gr_devices.tiff(filename=ggplot_file)
 
-    robjects.r('''dev.off''')
+    base.plot(mat_eqtl)
+
+    gr_devices.dev_off()
 
     print(f"Analysis took {(datetime.now() - start_time).total_seconds()} sec")
 
