@@ -83,10 +83,10 @@ at: https://cloud.r-project.org
 1.  First, you need to download the compressed PyReQLT modules or clone it from GitHub
 
 2.  If you choose to download the modules from the zip file, then upzip it and change to the directory *(cd)* 
-where the modules live (at the *source* directory):
+where the modules live (at the *PyReQTL* directory):
       ```bash
     unzip PyReQTL-master.zip
-    cd PyReQTL-master/source
+    cd PyReQTL-master/PyReQTL
       ```    
 3. Its highly recommended to create conda or python virtual environment to install the dependencies within such 
 environment (OPTIONAL):
@@ -136,7 +136,7 @@ environment (OPTIONAL):
 ## Running the Modules
 
 You are given two options to run the modules:
- 1. Running the prepared shell script *"run_all.sh"* found at the parent's directory of *source*. This script is 
+ 1. Running the prepared shell script *"run_all.sh"* found at the parent's directory of *PyReQTL*. This script is 
  prepared to automatically run all modules sequentially with just a single command.
  
  2. Running each individual python module separately.
@@ -164,11 +164,11 @@ sh run_all.sh
 ##### **Note**: 
 
 1. please refer to the link in the *References* section for the description of each module
-2. make sure you are in the ```source``` directory in order to run each individual python module
+2. make sure you are in the ```PyReQTL``` directory in order to run each individual python module
 
-- Run the following command to go the source directory:
+- Run the following command to go the PyReQTL directory:
  ```bash
-cd source/
+cd PyReQTL/
 ```
     
 ##### Inputs + Options

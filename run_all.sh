@@ -9,7 +9,7 @@ says so in this script or leave it as is.
 # You can modify the output directory name within each module but not here
 file_path="output"
 data_dir="data"
-source_dir="source"
+source_dir="PyReQTL"
 
 # [MODIFY] in case you want to change the default prefix
 prefix="ReQTL_test"
