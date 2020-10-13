@@ -15,6 +15,17 @@ Inputs + Options
 
     + -o: the prefix for the gene expression and gene location files
 
+    + -c: Whether the function is been executed with the command line. Default
+    is False.
+
+
+Return
+------
+
+In case cli argument is left unchanged "False" or set explicitly to False, the
+function build_gene_exp_mat will return 2 dataframes for gene expression matrix and gene locus
+information.
+
 
 Output
 -------
@@ -23,9 +34,10 @@ Output
     + a file with the gene location for MatrixEQTL
 
 
+
 How to Run
 -----------
-    python build_gen_exp_matrix.py -i ../data -o ReQTL_test
+    python -m PyReQTL.build_gen_exp_matrix -i data -o ReQTL_test -c True
 
 * Python runtime with time command 2.31s user 0.39s system 293% cpu 0.921 total
 * R time command line 5.06s user 0.49s system 94% cpu 5.858 total
@@ -41,22 +53,29 @@ import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from scipy.stats import norm  # type: ignore
 
-from common import create_output_dir, output_filename_generator
+try:
+    from common import create_output_dir, output_filename_generator
+except ModuleNotFoundError:
+    from PyReQTL.common import create_output_dir, output_filename_generator
 
 
-def main(args) -> None:
+def build_gene_matrix(gene_dir: str,
+                      prefx_out: str = "ReQTL_test",
+                      cli: bool = False):
     """Transforms the raw expression files into matrix
 
     Parameters
     ----------
-    args: arguments from the command line
-            -i: a directory consists of all the raw gene expression files from
+    gene_dir: a directory consists of all the raw gene expression files from
             Stringtie
 
-            -o: the prefix for the gene expression and gene location files
+    prefx_out: the prefix for the gene expression and gene location files
 
-    Returns
-    -------
+    cli: if the function is been executed with the command line or not.
+    Default is False.
+
+    Return
+    ------
     None
 
     Outputs
@@ -88,11 +107,11 @@ def main(args) -> None:
     #     4. excluding those genes that lack annotations
     #     5. appending every gene expression dataframe into a list
 
-    for filename in Path(args.gene_dir).glob("*" + gene_exp_suffix):
+    for filename in Path(gene_dir).glob("*" + gene_exp_suffix):
         gene_exps = pd.read_table(filename, sep="\t")
 
         select_cols = gene_exps[['Gene ID', 'Gene Name',
-                                 'Reference','Start',
+                                 'Reference', 'Start',
                                  'End', 'TPM']]
 
         clean_sample = select_cols.assign(sample=re.sub(gene_exp_suffix,
@@ -128,8 +147,7 @@ def main(args) -> None:
     gene_express_df['count_zero'] = (gene_express_df['TPM'] < 1).groupby(
         gene_express_df['Gene ID']).transform('sum')
 
-    gene_express_df['perc_zero'] = gene_express_df[
-                                       'count_zero'] / num_samples
+    gene_express_df['perc_zero'] = gene_express_df['count_zero'] / num_samples
 
     # remove duplicate entries for each gene if necessary
     gene_express_df = gene_express_df[gene_express_df['perc_zero'] < 0.8]
@@ -185,29 +203,57 @@ def main(args) -> None:
 
     # write result to files
     filename_gen_exp = output_filename_generator(output_dir,
-                                                 args.prefx_out,
+                                                 prefx_out,
                                                  "_gene-exp_matrix.txt")
 
     genes_exp_samples_df.to_csv(filename_gen_exp, sep="\t", index=False)
 
     file_gen_loc = output_filename_generator(output_dir,
-                                             args.prefx_out,
+                                             prefx_out,
                                              "_gene-exp-loc_matrix.txt")
 
     gene_loc.to_csv(file_gen_loc, sep="\t", index=False)
 
     print(f"\nfile is saved for gene expression in "
-          f"{output_dir}/{args.prefx_out}_gene-exp_matrix.txt")
+          f"{output_dir}/{prefx_out}_gene-exp_matrix.txt")
 
-    print(f"\nfile is saved for gene location in "
-          f"{output_dir}/{args.prefx_out}_gene-exp-loc_matrix.txt\n")
+    print(f"file is saved for gene location in "
+          f"{output_dir}/{prefx_out}_gene-exp-loc_matrix.txt\n")
 
-    # calculate the time it took for the analysis from start to end
-    print(f"Analysis took "
-          f"{(datetime.now() - start_time).total_seconds()} sec")
+    if cli:
+        # calculate the time it took for the analysis from start to end
+        print(f"Analysis took "
+              f"{(datetime.now() - start_time).total_seconds()} sec")
+    else:
+        return genes_exp_samples_df, gene_loc
 
 
-def run_command_lines() -> None:
+def bool_conv_args(args: str) -> bool:
+    """Convert string argument value to boolean True or False
+
+    Parameters
+    ----------
+    args: argument value to represent True or False
+
+
+    Return
+    -------
+    a converted string argument to a boolean value
+    """
+
+    # consider most possible truth values scenarios supplied by the user
+    if args.lower() in ['yes', 'true', 't', 'y']:
+        return True
+
+    elif args.lower() in ['no', 'false', 'f', 'n']:
+        return False
+
+    else:
+        raise argparse.ArgumentParser('Please make sure to enter a boolean '
+                                      'value i.e. True or False.')
+
+
+def main() -> None:
     """Parses the command line arguments entered by the user
 
     Parameters
@@ -227,21 +273,29 @@ def run_command_lines() -> None:
                         dest='gene_dir',
                         required=True,
                         help="""a directory with all raw gene expression files 
-                        from Stringtie. [REQUIRED]!""")
-
+                        from Stringtie.[REQUIRED]!""")
     parser.add_argument("-o",
                         dest="prefx_out",
                         default="ReQTL_test",
                         help="""the prefix of the gene expression and gene 
-                        location files. default is "ReQTL_test" [OPTIONAL]!""")
+                        location files. Default is 'ReQTL_test'!""")
+    parser.add_argument("-c",
+                        dest="cli",
+                        default=False,
+                        type=bool_conv_args,
+                        help="""Whether the function is been executed with the 
+                        command line. Default is False!""")
 
     args = parser.parse_args()
+    gene_dir = args.gene_dir
+    prefx_out = args.prefx_out
+    cli = args.cli
 
     try:
-        main(args)
+        build_gene_matrix(gene_dir, prefx_out, cli)
     except KeyboardInterrupt:
         sys.exit('\nthe user ends the program')
 
 
 if __name__ == '__main__':
-    run_command_lines()
+    main()
