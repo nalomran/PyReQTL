@@ -262,6 +262,10 @@ def run_reqtl(args):
                                                 args.out_dir,
                                                 "_cis_ReQTLs.txt")
 
+    output_file_name = output_filename_generator(output,
+                                                 args.out_dir,
+                                                 "_all_ReQTLs.txt")
+
     # call the matrix_eQTL_main of MatrixEQTL package in case of trans case
     if cis_or_trans == "T":
 
@@ -288,7 +292,7 @@ def run_reqtl(args):
         mat_eqtl = mql.Matrix_eQTL_main(
             snps=snvs_data,
             gene=gene_exp_data,
-            output_file_name=output_trans_file,
+            output_file_name=output_file_name,
             useModel=117348,
             verbose=False,
             pvOutputThreshold=float(args.p),
