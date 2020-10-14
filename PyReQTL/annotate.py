@@ -26,12 +26,11 @@ Output
 
 How to Run
 ----------
-    python -m PyReQTL.annotate \
+     python -m PyReQTL.annotate \
         -r output/ReQTL_test_all_ReQTLs.txt \
-        -ga ../data/gene_locations_hg38.txt \
+        -ga data/gene_locations_hg38.txt \
         -o ReQTL_test \
         -c True
-
 
 * Python runtime via time command  8.19s user 0.61s system 112% cpu 7.838 total
 * R time command line 3.15s user 0.22s system 99% cpu 3.383 total
