@@ -101,7 +101,12 @@ import rpy2.robjects as robjects  # type: ignore
 import rpy2.robjects as ro
 from rpy2.robjects.packages import importr  # type: ignore
 
-from common import create_output_dir, output_filename_generator
+try:
+    from common import (create_output_dir, output_filename_generator,
+                        bool_conv_args)
+except ModuleNotFoundError:
+    from PyReQTL.common import (create_output_dir, output_filename_generator,
+                                bool_conv_args)
 
 # use the following R operators to get and set R attributes
 get_r_attribute = ro.baseenv['$']
@@ -167,7 +172,7 @@ class MapTOS4(ro.methods.RS4):
         set_r_attribute(self, 'fileSliceSize', value)
 
 
-def main(args) -> None:
+def run_reqtl(args):
     """This function will be based off the sample code from Shabalin,
     et al (2012) of the R package MatrixEQTL.
 
@@ -176,10 +181,9 @@ def main(args) -> None:
     args: please read the above docstring (comments at the beginning of the
     module) for more information about the arguments used.
 
-    Returns
-    -------
+    Return
+    ------
     None
-
 
     Output
     ------
@@ -189,8 +193,6 @@ def main(args) -> None:
     - file QQ plot of p-values
 
     """
-
-    start_time = datetime.now()
 
     # check for installed package or install it, installing MatrixEQTL
     r_str_download = """
@@ -206,15 +208,21 @@ def main(args) -> None:
 
     robjects.r(r_str_download)
 
-    # import MatrixEQTL package
-    mql = importr("MatrixEQTL")
+    print("check 0")
     # import utils package
     utils = importr("utils")
-    # import grDevices package
-    gr_devices = importr('grDevices')
+
     # import base package
     base = importr('base')
 
+    # import MatrixEQTL package
+    mql = importr("MatrixEQTL")
+
+    # import grDevices package
+    gr_devices = importr('grDevices')
+    print("check 1")
+
+    start_time = datetime.now()
     snv_filename = args.snv
     snvs_data = MapTOS4(mql.SlicedData())
     # load snv/genotype data into SlicedData class
@@ -298,10 +306,12 @@ def main(args) -> None:
 
     gr_devices.dev_off()
 
-    print(f"Analysis took {(datetime.now() - start_time).total_seconds()} sec")
+    if args.cli:
+        print(f"Analysis took {(datetime.now() - start_time).total_seconds()}"
+              f" sec")
 
 
-def run_command_lines() -> None:
+def main() -> None:
     """Parses the command line arguments entered by the user
 
     Parameters
@@ -322,55 +332,52 @@ def run_command_lines() -> None:
                         dest='snv',
                         help="the SNV or variant matrix file from "
                              "harmonize_matrices")
-
     parser.add_argument('-sl',
                         required=True,
                         dest='snv_loc',
                         help="the SNV location matrix file from build_"
                              "VAF_matrix")
-
     parser.add_argument('-ge',
                         required=True,
                         dest="gen_exp",
                         help="gene expression file matrix from "
                              "build_gene-exp_matrix")
-
     parser.add_argument('-gl',
                         required=True,
                         dest="gen_loc",
                         help="gene locations file from build_gene-exp_matrix")
-
     parser.add_argument('-c',
                         dest="cov_mt",
                         help="""the covariates matrix file from "
                              "harmonize_matrices. [OPTIONAL]!""")
-
     parser.add_argument('-o',
                         dest="out_dir",
                         required=True,
                         help="the prefix for the path to the output files")
-
     parser.add_argument('-ct',
                         required=True,
                         help="logical (T or F) specifying whether to split "
                              "the output into cis or trans")
-
     parser.add_argument('-pcis',
                         help="p-value thresholds for the cis output files")
-
     parser.add_argument('-ptra',
                         help="p-value thresholds for the cis")
-
     parser.add_argument('-p',
                         help="p-value thresholds for the unified output file")
+    parser.add_argument("-cli",
+                        dest="cli",
+                        default=False,
+                        type=bool_conv_args,
+                        help="""Whether the function is been executed with the 
+                        command line. Default is False!""")
 
     args = parser.parse_args()
 
     try:
-        main(args)
+        run_reqtl(args)
     except KeyboardInterrupt:
         sys.exit('\nthe user ends the program')
 
 
 if __name__ == '__main__':
-    run_command_lines()
+    main()
