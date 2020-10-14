@@ -77,7 +77,15 @@ def harmonize_matrices(var_dir: str,
 
     Return
     ------
-    None
+    In case cli argument is left unchanged "False" or set explicitly to False,
+    the following will be returned:
+
+    - vaf_df: a harmonized variant dataframe
+
+    - gene_express_df: a harmonized gene expression dataframe
+
+    - covar_df: a harmonized covariate matrix dataframe
+
 
     Outputs
     -------
