@@ -28,7 +28,7 @@ Output
 
 How to Run
 -----------
-    python build_VAF_matrix.py -r ../data -o ReQTL_test
+    python -m PyReQTL.vaf_matrix -r data -o ReQTL_test -c True
 
 * Python runtime with time command 1.32s user 0.23s system 254% cpu 0.610 total
 * R time command line 1.65s user 0.18s system 91% cpu 2.011 total
@@ -44,23 +44,38 @@ import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from numpy import savetxt  # type: ignore
 
-from common import create_output_dir, output_filename_generator, remove_vars
+try:
+    from common import (create_output_dir, output_filename_generator,
+                        bool_conv_args, remove_vars)
+except ModuleNotFoundError:
+    from PyReQTL.common import (create_output_dir, output_filename_generator,
+                                bool_conv_args, remove_vars)
 
 
-def main(args) -> None:
+def build_vaf_matrix(read_dir: str,
+                     prefx_out: str = "ReQTL_test",
+                     cli: bool = False):
+
     """Transforms the read counts into a variant fraction matrix
 
     Parameters
     ----------
+    read_dir: a directory with the .csv files from the output of readCounts
 
-    args: arguments from the command line
-            -r: a directory with the .csv files from the output of readCounts
+    prefx_out: the prefix for the SNV matrix and SNV location files
 
-            -o: the prefix for the SNV matrix and SNV location files
+    cli: Whether the function is been executed with the command line.
+    Default is False!
 
     Returns
     -------
-    None
+    In case cli argument is left unchanged "False" or set explicitly to False,
+    the following will be retuned:
+
+    - read_counts_df: numpy array with the SNV variant allele fraction matrix
+    for MatrixEQTL
+
+    - snv_loc: numpy array with the SNV locations for MatrixEQTL
 
     Output
     ------
@@ -89,7 +104,7 @@ def main(args) -> None:
     #        parsing and loading readCount files into single dataframe        #
     # ------------------------------------------------------------------------#
 
-    for filename in Path(args.read_count).glob("*csv"):
+    for filename in Path(read_dir).glob("*csv"):
         read_counts = pd.read_table(filename, sep=",")
         select_cols = read_counts[['CHROM', 'POS',
                                    'REF', 'ALT',
@@ -154,7 +169,7 @@ def main(args) -> None:
     fmt_loc = "%s,%s,%.0f".split(",")
 
     snv_mat_file = output_filename_generator(output,
-                                             args.prefx_out,
+                                             prefx_out,
                                              '_VAF_matrix.txt')
 
     # added comments to remove "#" at the beginning of the header
@@ -166,7 +181,7 @@ def main(args) -> None:
             header=str("\t".join([str(hdr) for hdr in header])))
 
     snv_loc_file = output_filename_generator(output,
-                                             args.prefx_out,
+                                             prefx_out,
                                              '_VAF_loc_matrix.txt')
 
     savetxt(snv_loc_file,
@@ -176,14 +191,17 @@ def main(args) -> None:
             fmt="\t".join(fmt_loc),
             header=str("\t".join([str(hdr) for hdr in header_loc])))
 
-    print(f"\nfile is saved for variant matrix to {output}/{args.prefx_out}"
+    print(f"\nfile is saved for variant matrix to {output}/{prefx_out}"
           f"_VAF_matrix.txt")
 
-    print(f"\nfile is saved for gene location to {output}/{args.prefx_out}"
+    print(f"\nfile is saved for gene location to {output}/{prefx_out}"
           f"_VAF_loc_matrix.txt\n")
 
-    print(f"Analysis took "
-          f"{(datetime.now() - start_time).total_seconds()} sec")
+    if cli:
+        print(f"Analysis took "
+              f"{(datetime.now() - start_time).total_seconds()} sec")
+    else:
+        return read_counts_df, snv_loc
 
 
 def run_command_lines() -> None:
@@ -202,21 +220,30 @@ def run_command_lines() -> None:
     parser = argparse.ArgumentParser(description="build variant allele "
                                                  "fraction expression matrix")
     parser.add_argument("-r",
-                        dest="read_count",
+                        dest="read_dir",
                         required=True,
                         help="""a directory with the .csv files from the 
                         output of readCounts module. [REQUIRED]!""")
-
     parser.add_argument("-o",
                         dest="prefx_out",
                         default="ReQTL_test",
                         help="""the prefix for the SNV matrix and SNV location 
                         files. [OPTIONAL]!""")
+    parser.add_argument("-c",
+                        dest="cli",
+                        default=False,
+                        type=bool_conv_args,
+                        help="""Whether the function is been executed with the 
+                        command line. Default is False!""")
 
     args = parser.parse_args()
 
+    read_dir = args.read_dir
+    prefx_out = args.prefx_out
+    cli = args.cli
+
     try:
-        main(args)
+        build_vaf_matrix(read_dir, prefx_out, cli)
     except KeyboardInterrupt:
         sys.exit('\nthe user ends the program')
 
