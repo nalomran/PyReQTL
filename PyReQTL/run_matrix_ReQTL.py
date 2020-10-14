@@ -63,27 +63,31 @@ Output
 How to Run
 ----------
      # execute it by splitting cis and trans
-     python run_matrix_ReQTL.py \
-      -s output/ReQTL_test_VAF_matrix_harmonized.txt \
-      -sl output/ReQTL_test_VAF_loc_matrix.txt \
-      -ge output/ReQTL_test_gene-exp_matrix_harmonized.txt \
-      -gl output/ReQTL_test_gene-exp-loc_matrix.txt \
-      -c output/covariates_matrix_harmonized.txt \
-      -ct T \
-      -o "ReQTL_test" \
-      -pcis 0.001 \
-      -ptra 0.00001
+     python -m PyReQTL.run_matrix_ReQTL \
+          -s output/ReQTL_test_VAF_matrix_harmonized.txt \
+          -sl output/ReQTL_test_VAF_loc_matrix.txt \
+          -ge output/ReQTL_test_gene-exp_matrix_harmonized.txt \
+          -gl output/ReQTL_test_gene-exp-loc_matrix.txt \
+          -c output/covariates_matrix_harmonized.txt \
+          -ct T \
+          -o "ReQTL_test" \
+          -pcis 0.001 \
+          -ptra 0.00001 \
+          -cli True
+
 
      # execute by unified cis and trans
-     python run_matrix_ReQTL.py \
-       -s output/ReQTL_test_VAF_matrix_harmonized.txt \
-       -sl output/ReQTL_test_VAF_loc_matrix.txt \
-       -ge output/ReQTL_test_gene-exp_matrix_harmonized.txt \
-       -gl output/ReQTL_test_gene-exp-loc_matrix.txt \
-       -c output/covariates_matrix_harmonized.txt \
-       -ct F \
-       -o "ReQTL_test" \
-       -p 0.001
+     python -m PyReQTL.run_matrix_ReQTL \
+          -s output/ReQTL_test_VAF_matrix_harmonized.txt \
+          -sl output/ReQTL_test_VAF_loc_matrix.txt \
+          -ge output/ReQTL_test_gene-exp_matrix_harmonized.txt \
+          -gl output/ReQTL_test_gene-exp-loc_matrix.txt \
+          -c output/covariates_matrix_harmonized.txt \
+          -ct F \
+          -o "ReQTL_test" \
+          -p 0.001 \
+          -cli True
+
 
 * Python runtime (T) with time 2.41s user 0.36s system 146% cpu 1.890 total
 * R time command line 2.09s user 0.22s system 85% cpu 2.695 total
@@ -208,7 +212,6 @@ def run_reqtl(args):
 
     robjects.r(r_str_download)
 
-    print("check 0")
     # import utils package
     utils = importr("utils")
 
@@ -220,7 +223,6 @@ def run_reqtl(args):
 
     # import grDevices package
     gr_devices = importr('grDevices')
-    print("check 1")
 
     start_time = datetime.now()
     snv_filename = args.snv
@@ -289,7 +291,7 @@ def run_reqtl(args):
             output_file_name=output_trans_file,
             useModel=117348,
             verbose=False,
-            pvOutputThreshold=float(args.ptra),
+            pvOutputThreshold=float(args.p),
             snpspos=snv_pos,
             genepos=gene_pos,
             pvalue_hist="qqplot",
