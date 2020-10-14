@@ -204,7 +204,7 @@ def build_vaf_matrix(read_dir: str,
         return read_counts_df, snv_loc
 
 
-def run_command_lines() -> None:
+def main() -> None:
     """Parses the command line arguments entered by the user
 
     Parameters
@@ -249,4 +249,4 @@ def run_command_lines() -> None:
 
 
 if __name__ == '__main__':
-    run_command_lines()
+    main()
