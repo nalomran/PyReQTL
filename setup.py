@@ -12,7 +12,6 @@ setup(
     description='A python library equivalent to R ReQTL Toolkit to '
                 'identify the association between expressed SNVs with '
                 'their gene expression using RNA-sequencing data.',
-
     long_description=read_me,
     author='Nawaf Alomran',
     author_email='nawafalomran@hotmail.com',
