@@ -25,7 +25,6 @@ setup(
         "Intended Audience :: Science/Research",
         "Intended Audience :: Developers",
         "Intended Audience :: Information Technology",
-        'License :: MIT License',
         'Natural Language :: English',
         "Programming Language :: Python :: 3",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
