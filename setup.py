@@ -16,6 +16,7 @@ setup(
     author='Nawaf Alomran',
     author_email='nawafalomran@hotmail.com',
     url='https://github.com/nalomran/PyReQTL',
+    download_url='https://github.com/nalomran/PyReQTL/archive/PyReQTL-0.1.0.tar.gz',
     packages=find_packages(),
     install_requires=requirements,
     license='MIT License',

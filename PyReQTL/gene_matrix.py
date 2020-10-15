@@ -56,7 +56,8 @@ from scipy.stats import norm  # type: ignore
 try:
     from common import create_output_dir, output_filename_generator
 except ModuleNotFoundError:
-    from PyReQTL.common import create_output_dir, output_filename_generator
+    from PyReQTL.common import (create_output_dir, output_filename_generator,
+                                bool_conv_args)
 
 
 def build_gene_matrix(gene_dir: str,

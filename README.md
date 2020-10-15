@@ -1,6 +1,8 @@
 # PyReQTL
 ## Introduction
 
+![GitHub](https://img.shields.io/github/license/nalomran/PyReQTL)
+
 PyReQTL is a python package/library that consist of collection of python modules developed for individuals or research 
 group who prefer to perform ReQTL analysis using python instead of R programming language. Hence, this library are 
 replica of the R toolkit **"ReQTL"** but implemented in Python (please see the section References for direct link of the
