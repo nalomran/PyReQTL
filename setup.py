@@ -8,7 +8,7 @@ with open('requirements.txt') as rf:
 
 setup(
     name='PyReQTL',
-    version='0.1.0',
+    version='0.3.0',
     description='A python library equivalent to R ReQTL Toolkit to '
                 'identify the association between expressed SNVs with '
                 'their gene expression using RNA-sequencing data.',
