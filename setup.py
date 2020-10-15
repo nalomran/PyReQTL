@@ -19,12 +19,12 @@ setup(
     download_url='https://github.com/nalomran/PyReQTL/archive/PyReQTL-0.1.0.tar.gz',
     packages=find_packages(),
     install_requires=requirements,
-    license='MIT License',
     classifiers=[
         "Environment :: Console",
         "Intended Audience :: Science/Research",
         "Intended Audience :: Developers",
         "Intended Audience :: Information Technology",
+        "License :: OSI Approved :: MIT License",
         'Natural Language :: English',
         "Programming Language :: Python :: 3",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
