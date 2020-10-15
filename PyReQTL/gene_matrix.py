@@ -228,31 +228,6 @@ def build_gene_matrix(gene_dir: str,
         return genes_exp_samples_df, gene_loc
 
 
-def bool_conv_args(args: str) -> bool:
-    """Convert string argument value to boolean True or False
-
-    Parameters
-    ----------
-    args: argument value to represent True or False
-
-
-    Return
-    -------
-    a converted string argument to a boolean value
-    """
-
-    # consider most possible truth values scenarios supplied by the user
-    if args.lower() in ['yes', 'true', 't', 'y']:
-        return True
-
-    elif args.lower() in ['no', 'false', 'f', 'n']:
-        return False
-
-    else:
-        raise argparse.ArgumentParser('Please make sure to enter a boolean '
-                                      'value i.e. True or False.')
-
-
 def main() -> None:
     """Parses the command line arguments entered by the user
 

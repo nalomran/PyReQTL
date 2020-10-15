@@ -1,36 +1,31 @@
 # PyReQTL
-
 ## Introduction
 
-I present to you a collection of python modules which were developed for individuals or research 
-groups who prefer to perform ReQTL analysis using python instead of R. Hence, this Python modules are replica of 
-the R toolkit **"ReQTL"** but implemented in Python (please see the section References for direct link of the
-ReQTL R toolkit GitHub page). The original R toolkit requires a number of R packages such as 
+PyReQTL is a python package/library that consist of collection of python modules developed for individuals or research 
+group who prefer to perform ReQTL analysis using python instead of R programming language. Hence, this library are 
+replica of the R toolkit **"ReQTL"** but implemented in Python (please see the section References for direct link of the
+ReQTL R toolkit GitHub repo page). The original R toolkit requires a number of R packages such as 
 MatrixEQTL and among others Python lacks equivalent libraries. Furthermore, despite that many of the code-base in this 
-particular project were smoothly translated into python, there were consistence needs to interface with R and its 
-environment including importing R packages to utilizing their functions for instance from within Python and thus 
+particular project were smoothly translated into python, there were needs to interface with R and to its 
+environment which includes importing R packages to utilize their functions from within Python and thus 
 the Python library "rpy2" and R are requirements to these modules.
 
-
-Briefly, ReQTL does identify the correlation between expressed SNVs and their gene expression using RNA-sequencing data 
-and each module transforms the sequencing files into ReQTL input files which will eventually be used 
+Briefly, PyReQTL does as for the ReQTL identify the correlation between expressed SNVs and their gene expression using 
+RNA-sequencing data and each module transforms the sequencing files into ReQTL input files which will eventually be used 
 as inputs for the R package MatrixEQTL to find the significant variation-expression relationships. 
 
 
 ## Asking for Help
 
-If you have an issue (error or bug) when executing any of the individual module or via the prepared shell script, 
-or have any other enquires please feel free to send me an [email](mailto:nawafalomran@hotmail.com)
-
-
-## Release
-This is the first release version of PyReQTL. 
+If you have an issue (error or bug) when executing the library or any of the modules or have any other enquires please 
+feel free to send me an [email](mailto:nawafalomran@hotmail.com)
 
 
 ## Getting Started
 
 Please follow the instructions in the sections that follow. You need to have a terminal to be able to execute the 
-modules via the command line. In case you are getting an error or bug please refer to the section **Asking for Help**.
+modules via the command line interface (cli). In case you are getting an error or bug please refer to the section 
+**Asking for Help**.
 
 
 ## Operating System Requirement
@@ -79,7 +74,7 @@ at: https://cloud.r-project.org
   3. Some bioconductor packages will also be required for the bioinformatics related analysis.
 
 
-## Install 
+## Installation 
 1.  First, you need to download the compressed PyReQLT modules or clone it from GitHub
 
 2.  If you choose to download the modules from the zip file, then upzip it and change to the directory *(cd)* 

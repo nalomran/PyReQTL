@@ -1,3 +1,4 @@
+"""A module that contains helper functions"""
 import argparse
 from pathlib import Path, PurePath
 from typing import List
@@ -116,5 +117,5 @@ def bool_conv_args(args: str) -> bool:
         return False
 
     else:
-        raise argparse.ArgumentParser('Please make sure to enter a boolean '
-                                      'value i.e. True or False.')
+        raise argparse.ArgumentTypeError('Please make sure to enter a boolean '
+                                         'value i.e. True or False.')
