@@ -37,7 +37,7 @@ Output
 
 How to Run
 -----------
-    python -m PyReQTL.build_gen_exp_matrix -i data -o ReQTL_test -c True
+    python -m PyReQTL.gene_matrix -i data -o ReQTL_test -c True
 
 * Python runtime with time command 2.31s user 0.39s system 293% cpu 0.921 total
 * R time command line 5.06s user 0.49s system 94% cpu 5.858 total
@@ -54,7 +54,8 @@ import pandas as pd  # type: ignore
 from scipy.stats import norm  # type: ignore
 
 try:
-    from common import create_output_dir, output_filename_generator
+    from common import (create_output_dir, output_filename_generator,
+                        bool_conv_args)
 except ModuleNotFoundError:
     from PyReQTL.common import (create_output_dir, output_filename_generator,
                                 bool_conv_args)

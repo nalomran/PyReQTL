@@ -1,8 +1,16 @@
 # PyReQTL
-## Introduction
 
 ![GitHub](https://img.shields.io/github/license/nalomran/PyReQTL)
+[![Maintainability](https://api.codeclimate.com/v1/badges/10f81663bd87cbf2178a/maintainability)](https://codeclimate.com/github/nalomran/PyReQTL/maintainability)
 
+**Index: [Introduction](#introduction) | [Features](#features) | [Asking for Help](#asking-for-help) | 
+[Getting Started](#getting-started) | [Operating System Requirement](#operating-system-requirement) | 
+[Python Version](#python-version) | [Prerequisites](#prerequisites) | [Installation](#installation) | [Quick example](#quick-example) |
+[Running the Modules](#running-the-modules) | 
+[Authors & Acknowledgment for the ReQTL R Toolkit](#authors--Acknowledgment-for-the-ReQTL-R-toolkit]) | [Paper](#paper) |
+[References](#references)**
+
+## Introduction
 PyReQTL is a python package/library that consist of collection of python modules developed for individuals or research 
 group who prefer to perform ReQTL analysis using python instead of R programming language. Hence, this library are 
 replica of the R toolkit **"ReQTL"** but implemented in Python (please see the section References for direct link of the
@@ -17,6 +25,12 @@ RNA-sequencing data and each module transforms the sequencing files into ReQTL i
 as inputs for the R package MatrixEQTL to find the significant variation-expression relationships. 
 
 
+## Features
+   - Faster than the R ReQTL version 
+   - For efficiency and performance, it uses both Pandas DataFrames and numpy arrays
+   - rpy2 is more efficient and better integrated than using subprocess to interface with R 
+   
+
 ## Asking for Help
 
 If you have an issue (error or bug) when executing the library or any of the modules or have any other enquires please 
@@ -27,7 +41,7 @@ feel free to send me an [email](mailto:nawafalomran@hotmail.com)
 
 Please follow the instructions in the sections that follow. You need to have a terminal to be able to execute the 
 modules via the command line interface (cli). In case you are getting an error or bug please refer to the section 
-**Asking for Help**.
+**[Asking for Help](#asking-for-help)**.
 
 
 ## Operating System Requirement
@@ -40,9 +54,9 @@ Both Python version *3.7* and *3.8* were successfully tested on PyReQTL. You nee
 
 **Note:**
 
-- I would recommend checking your default python version which it may be python *version 2.7*  so running ```python```
+- I would recommend checking your default python version which it may be python v2.7  so running ```python```
 may start version *2.6* or *2.7* and therefore you need to run ```python3``` to start python 3 version 
-or you may set your python3 as your default python version.
+or you may set your python v3 as your default python version.
 
 
 - Note that PyReQTL were not tested on Windows and it may or may not work.
@@ -59,7 +73,7 @@ or you may set your python3 as your default python version.
   ```
   
 * Optional Python Library:
-    ```
+  ```
   mypy
   ```
 
@@ -77,62 +91,58 @@ at: https://cloud.r-project.org
 
 
 ## Installation 
-1.  First, you need to download the compressed PyReQLT modules or clone it from GitHub
 
-2.  If you choose to download the modules from the zip file, then upzip it and change to the directory *(cd)* 
-where the modules live (at the *PyReQTL* directory):
-      ```bash
-    unzip PyReQTL-master.zip
-    cd PyReQTL-master/PyReQTL
-      ```    
-3. Its highly recommended to create conda or python virtual environment to install the dependencies within such 
-environment (OPTIONAL):
+1.  Install the package with pip: 
 
-     - Creating conda virtual environment:
-     
-        ```bash
-        conda create -n your_env_name
-        conda activate your_env_name
-       ```
-     - Creating python virtual environment:
-     
-       ```bash
-        pip install virtualenv
-        virtualenv your_env_name
-        source your_env_name/bin/activate
-       ```
-       
-     - **Note:** please don't forget to deactivate your environment of choice once you're done running the modules:
-       ```bash
-            # for conda env
-            conda deactivate
-       
-            # for python env
-            deactivate
-       ```
-
-4. You may now try to install the dependencies by running the command:
     ```bash
-    sudo pip install -r requirements.txt
-   ```   
+    pip install PyReQTL
+    ```   
+
+2.  You could also clone the project with the command git clone:
+      ```bash
+      git clone https://github.com/nalomran/PyReQTL.git
+      ```    
+    
+    -  Once cloned, you may now try to install the dependencies by running the command:
+          ```bash
+            sudo pip install -r requirements.txt
+          ```   
    
-5. Then, issue the  ```ls ``` command to list the files that end with .py (i.e. the PyReQTL modules) (OPTIONAL)
-   ```bash
-    ls -1 *.py    
-   ```  
-   You should see the following list of python scripts:
-   ```                                                                                                                                                  ✔  PyReQTL 🐍  09:08:09 
-    annotate_cis_trans.py
-    build_VAF_matrix.py
-    build_gen_exp_matrix.py
-    commons.py
-    harmonize_matrices.py
-    run_matrix_ReQTL.py
-    ```
+    - Then, issue the  ```ls ``` command to list the files that end with .py (i.e. the PyReQTL modules) (OPTIONAL)
+       ```bash
+        ls -1 *.py    
+       ```
    
+## Quick example
+
+```python
+from PyReQTL import gene_matrix
+gene_exp, gene_loc = gene_matrix.build_gene_matrix(gene_dir='data', prefx_out='ReQTL_test')
+
+# file is saved for gene expression in output/ReQTL_test_gene-exp_matrix.txt
+# file is saved for gene location in output/ReQTL_test_gene-exp-loc_matrix.txt
+
+gene_exp.head(3)
+# sample          gene_id  sample_1  sample_10  sample_11  sample_12  sample_13  sample_14  sample_15  ...  sample_25  sample_3  sample_4  sample_5  sample_6  sample_7  sample_8  sample_9
+# 0       ENSG00000000457  0.502402  -0.502402  -0.395725  -1.020076  -0.736316  -1.768825  -1.426077  ...   1.020076  1.198380 -0.194028  1.426077 -1.198380 -0.293381  1.768825  0.096559
+# 1       ENSG00000000460  0.502402   0.395725   0.000000  -1.426077  -0.502402  -0.736316  -0.869424  ...   1.020076  1.198380 -1.198380  1.426077 -1.020076 -1.768825  1.768825  0.096559
+# 2       ENSG00000000938 -0.096559   1.426077  -0.293381   0.293381  -0.736316  -1.198380  -0.395725  ...   1.020076 -0.194028  1.198380  0.736316  0.194028 -1.768825  0.502402 -1.426077
+# [3 rows x 26 columns]
+
+gene_loc.head(3)
+# GeneID Reference  Start     End
+# 0  ENSG00000237613      chr1  34554   36081
+# 1  ENSG00000238009      chr1  89295  133723
+# 2  ENSG00000239945      chr1  89551   91105
+# [3 rows x 4 columns])
+```
+```bash  
+python -m PyReQTL.gene_matrix -i data -o ReQTL_test -c True 
+```
+
 ## Running the Modules
 
-You are given two options to run the modules:
+If you choose to clone the repo from Github, then you are given two options to run the modules:
  1. Running the prepared shell script *"run_all.sh"* found at the parent's directory of *PyReQTL*. This script is 
  prepared to automatically run all modules sequentially with just a single command.
  
@@ -160,7 +170,7 @@ sh run_all.sh
 
 ##### **Note**: 
 
-1. please refer to the link in the *References* section for the description of each module
+1. please refer to the link in the **[References](#references)** section for the description of each module
 2. make sure you are in the ```PyReQTL``` directory in order to run each individual python module
 
 - Run the following command to go the PyReQTL directory:
@@ -329,13 +339,6 @@ python annotate_cis_trans.py \
 ```
 ***
 
-
-## Features
-   - Faster than the R ReQTL version 
-   - For efficiency and performance, it uses both Pandas DataFrames and numpy arrays
-   - rpy2 is more efficient and better integrated than using subprocess to interface with R 
-   
-
 ## Authors & Acknowledgment for the ReQTL R Toolkit
 
 
@@ -354,4 +357,4 @@ upon which *run\_matrix_ReQTL.R* is based.
 
 2. MatrixEQTL R package: http://www.bios.unc.edu/research/genomic_software/Matrix_eQTL/
 
-2. readCounts module: https://github.com/HorvathLab/NGS/tree/master/readCounts
+3. readCounts module: https://github.com/HorvathLab/NGS/tree/master/readCounts

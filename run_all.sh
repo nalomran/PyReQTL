@@ -16,14 +16,14 @@ prefix="ReQTL_test"
 
 echo "start executing python scripts sequentially ..."
 
-# running the build_gen_exp_matrix.py with its command arguments
-python $source_dir/build_gen_exp_matrix.py \
+# running the gene_matrix.py with its command arguments
+python $source_dir/gene_matrix.py \
       -i $data_dir \
       -o $prefix
 echo "Done with build_gen_exp_matrix.py"
 
 # second python script build_VAF_matrix
-python $source_dir/build_VAF_matrix.py \
+python $source_dir/vaf_matrix.py \
       -r $data_dir \
       -o $prefix
 echo "Done with build_VAF_matrix.py"
@@ -63,7 +63,7 @@ python $source_dir/run_matrix_ReQTL.py \
 echo "Done with the unified cis and trans"
 
 # run the annotation script
-python $source_dir/annotate_cis_trans.py \
+python $source_dir/annotate.py \
       -r $file_path/ReQTL_test_all_ReQTLs.txt \
       -ga $data_dir/gene_locations_hg38.txt \
       -o ReQTL_test
