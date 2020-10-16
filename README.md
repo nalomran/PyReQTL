@@ -57,8 +57,6 @@ Both Python version *3.7* and *3.8* were successfully tested on PyReQTL. You nee
 - I would recommend checking your default python version which it may be python v2.7  so running ```python```
 may start version *2.6* or *2.7* and therefore you need to run ```python3``` to start python 3 version 
 or you may set your python v3 as your default python version.
-
-
 - Note that PyReQTL were not tested on Windows and it may or may not work.
 
 ## Prerequisites
