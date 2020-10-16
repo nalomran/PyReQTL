@@ -8,7 +8,7 @@ with open('requirements.txt') as rf:
 
 setup(
     name='PyReQTL',
-    version='0.3.0',
+    version='0.4.0',
     description='A python library equivalent to R ReQTL Toolkit.',
     long_description=read_me,
     long_description_content_type='text/markdown',
