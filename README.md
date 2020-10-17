@@ -93,7 +93,7 @@ at: https://cloud.r-project.org
 1.  Install the package with pip: 
 
     ```bash
-    pip install PyReQTL
+    pip install pyreqtl
     ```   
 
 2.  You could also clone the project with the command git clone:
