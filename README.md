@@ -2,6 +2,10 @@
 
 ![GitHub](https://img.shields.io/github/license/nalomran/PyReQTL)
 [![Maintainability](https://api.codeclimate.com/v1/badges/10f81663bd87cbf2178a/maintainability)](https://codeclimate.com/github/nalomran/PyReQTL/maintainability)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/nalomran/PyReQTL.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/nalomran/PyReQTL/alerts/)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/nalomran/PyReQTL.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/nalomran/PyReQTL/context:python)
+![install_with: pip](https://img.shields.io/badge/install%20with-pip-green)
+![pypi_package: passing](https://img.shields.io/badge/Pypi%20Package-passing-brightgreen)
 
 **Index: [Introduction](#introduction) | [Features](#features) | [Asking for Help](#asking-for-help) | 
 [Getting Started](#getting-started) | [Operating System Requirement](#operating-system-requirement) | 
@@ -26,9 +30,9 @@ as inputs for the R package MatrixEQTL to find the significant variation-express
 
 
 ## Features
-   - Faster than the R ReQTL version 
-   - For efficiency and performance, it uses both Pandas DataFrames and numpy arrays
-   - rpy2 is more efficient and better integrated than using subprocess to interface with R 
+  - Faster than the R ReQTL version 
+  - For efficiency and performance, it uses both Pandas DataFrames and numpy arrays
+  - rpy2 is more efficient and better integrated than using subprocess to interface with R 
    
 
 ## Asking for Help
