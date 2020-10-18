@@ -6,6 +6,9 @@
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/nalomran/PyReQTL.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/nalomran/PyReQTL/context:python)
 ![install_with: pip](https://img.shields.io/badge/install%20with-pip-green)
 ![pypi_package: passing](https://img.shields.io/badge/Pypi%20Package-passing-brightgreen)
+![GitHub last commit](https://img.shields.io/github/last-commit/nalomran/PyReQTL)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/w/nalomran/PyReQTL)
+![GitHub Release Date](https://img.shields.io/github/release-date/nalomran/PyReQTL)
 
 **Index: [Introduction](#introduction) | [Features](#features) | [Asking for Help](#asking-for-help) | 
 [Getting Started](#getting-started) | [Operating System Requirement](#operating-system-requirement) | 
